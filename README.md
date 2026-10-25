@@ -1,12 +1,24 @@
-SceneSpeak ​
-"See anything. Understand everything."
+# SceneSpeak 👁️💬
+
+> **"See anything. Understand everything."**
+
 SceneSpeak lets anyone upload an image or capture a live photo and have an interactive conversation with it, turning complex visual information into simple, understandable answers using Gemma 4 multimodal intelligence.
- Project Overview (For Judges & Mentors)
-Goal in One Sentence:SceneSpeak lets anyone upload an image and have a conversation with it, turning visual information into understandable answers using Gemma 4's multimodal intelligence.
-Target Audience: Students, curious learners, technicians, cooks, and anyone encountering unfamiliar visual information.
-Multimodal Engine: Google Gen AI SDK (@google/genai) connecting to Gemma 4 multimodal models via the official Google AI Studio Gemini API endpoint.
-Architecture: Zero-persistence, privacy-friendly, stateless architecture (no database, no credentials leaked to client).
- Project Structure
+
+---
+
+## 🏆 Project Overview (For Judges & Mentors)
+
+- **Goal in One Sentence:**  
+  *SceneSpeak lets anyone upload an image and have a conversation with it, turning visual information into understandable answers using Gemma 4's multimodal intelligence.*
+- **Target Audience:** Students, curious learners, technicians, cooks, and anyone encountering unfamiliar visual information.
+- **Multimodal Engine:** Google Gen AI SDK (`@google/genai`) connecting to Gemma 4 multimodal models via the official Google AI Studio Gemini API endpoint.
+- **Architecture:** Zero-persistence, privacy-friendly, stateless architecture (no database, no credentials leaked to client).
+
+---
+
+## 📁 Project Structure
+
+```text
 SceneSpeak/
 ├── backend/
 │   ├── src/
@@ -49,12 +61,18 @@ SceneSpeak/
 │
 ├── package.json                   # Root workspace scripts
 └── README.md                      # Complete guide, prompt design & demo script
-​
- Quick Start Guide
-Prerequisites
-Node.js: v18.0.0 or higher (v20+ recommended)
-Google Gemini API Key: Free key from Google AI Studio
-1. Clone & Configure Backend
+```
+
+---
+
+## ⚡ Quick Start Guide
+
+### Prerequisites
+- **Node.js**: v18.0.0 or higher (v20+ recommended)
+- **Google Gemini API Key**: Free key from [Google AI Studio](https://aistudio.google.com/app/apikey)
+
+### 1. Clone & Configure Backend
+```bash
 # Navigate to backend directory
 cd backend
 
@@ -63,14 +81,18 @@ npm install
 
 # Create .env from template
 cp .env.example .env
-​
-Open backend/.env and insert your Gemini API Key:
+```
+
+Open `backend/.env` and insert your Gemini API Key:
+```env
 PORT=5000
 GEMINI_API_KEY=your_actual_api_key_here
 GEMMA_MODEL=gemini-2.5-flash
 MAX_FILE_SIZE_MB=10
-​
-2. Configure & Start Frontend
+```
+
+### 2. Configure & Start Frontend
+```bash
 # From workspace root, navigate to frontend
 cd ../frontend
 
@@ -79,17 +101,26 @@ npm install
 
 # Start Vite development server
 npm run dev
-​
-3. Start Backend Server
+```
+
+### 3. Start Backend Server
 In a separate terminal:
+```bash
 cd backend
 npm run dev
-​
-Frontend Application: http://localhost:3000
-Backend API: http://localhost:5000/api/health
- Multimodal Prompt Design
+```
+
+- **Frontend Application:** [http://localhost:3000](http://localhost:3000)
+- **Backend API:** [http://localhost:5000/api/health](http://localhost:5000/api/health)
+
+---
+
+## 🧠 Multimodal Prompt Design
+
 SceneSpeak uses a structured system instruction combined with conversation history and image payloads.
-System Prompt
+
+### System Prompt
+```markdown
 You are SceneSpeak, an expert multimodal AI assistant whose purpose is to help anyone
 understand what they are seeing ("See anything. Understand everything.").
 
@@ -114,105 +145,69 @@ Guidelines for your answers:
    - [Question 1]
    - [Question 2]
    - [Question 3]
-​
-Multimodal Multi-Turn Context Flow
+```
+
+### Multimodal Multi-Turn Context Flow
 To keep conversation state lightweight and stateless:
-Turn 1 (Initial Ask):
-The image inline buffer (image/jpeg, base64) is passed along with the user's first question inside the initial user turn:
-{
-  "role": "user",
-  "parts": [
-    { "inlineData": { "mimeType": "image/jpeg", "data": "<BASE64>" } },
-    { "text": "What is in this image?" }
-  ]
-}
-​
-Turn 2+ (Follow-up Chat):
-The client sends the prior turns in history. The server prepends the image to the first user turn and appends subsequent model and user text turns, allowing Gemma 4 to answer questions like "What happens if this component is removed?" while maintaining the visual context of the original photo.
- Error Handling
-Scenario
-HTTP Status
-Response Code
-User Experience
-Upload exceeds 10MB
-413 Payload Too Large
-FILE_TOO_LARGE
-Clean banner asking to compress or pick a smaller photo
-Unsupported file (e.g., PDF)
-415 Unsupported Media Type
-UNSUPPORTED_MEDIA_TYPE
-Informs user that only JPEG, PNG, WebP, GIF are supported
-Missing GEMINI_API_KEY
-401 Unauthorized
-MISSING_API_KEY
-Yellow header badge + direct link to Google AI Studio
-Camera denied / unavailable
-Client-side catch
-CAMERA_ERROR
-Friendly modal alert offering file upload alternative
-Gemini API rate limit
-429 Too Many Requests
-AI_API_ERROR
-Instructs user to wait a few seconds before retrying
- 3-Minute Hackathon Demo Script
-SceneSpeak comes with three prepared demo images in demo_assets/ and built-in 1-click presets in the UI:
-Scene 1: Electrical Circuit (Breadboard with Microcontroller & LED)
-Click  Electrical Circuit in the preset bar.
-The circuit photo loads automatically with the question:"What is this circuit, and how does it work?"
-Observation: Gemma 4 identifies the ATmega microcontroller chip, green LED, current-limiting resistors, and capacitors. It explains how electricity flows from the power rails through the chip to light the LED.
-Follow-up Test: Click the suggested chip:"What happens if one of the resistors is removed?"
-Gemma explains that removing the resistor breaks the circuit loop or can burn out the LED with excess current.
-Click Listen to demonstrate audio text-to-speech.
-Scene 2: Restaurant Menu (Trattoria Luna)
-Click  Restaurant Menu in the preset bar.
-Ask: "Which dishes are vegetarian, and what do they contain?"
-Observation: Gemma reads the Italian names and leaf icons, listing the Bruschetta Mista, Burrata Caprese, Ravioli di Spinaci, and Gnocchi al Pomodoro, defining ingredients like burrata, pesto, and sage butter in simple English.
-Follow-up Test: Ask:"I have a nut allergy. Is there any dish I should avoid?"
-Gemma identifies the Ravioli di Spinaci (contains toasted walnuts) and warns the user.
-Scene 3: Handwritten Biology Notes (Photosynthesis & Chloroplasts)
-Click  Study Notes & Diagram in the preset bar.
-Ask: "Explain this diagram and summarize the main concepts."
-Observation: Gemma decodes the student's handwriting, reads the chemical equation (
-6
-𝐶
-𝑂
-2
-+
-6
-𝐻
-2
-𝑂
-→
-𝐶
-6
-𝐻
-12
-𝑂
-6
-+
-6
-𝑂
-2
-6CO 
-2
-​
- +6H 
-2
-​
- O→C 
-6
-​
- H 
-12
-​
- O 
-6
-​
- +6O 
-2
-​
- ), explains the role of thylakoids and chlorophyll, and breaks down the Calvin cycle into simple steps.
-Follow-up Test: Ask:"Give me a 3-question quick quiz based on these notes."
-Gemma generates a beginner-friendly quiz to test the user's understanding.
- License
+1. **Turn 1 (Initial Ask):**  
+   The image inline buffer (`image/jpeg`, base64) is passed along with the user's first question inside the initial user turn:
+   ```json
+   {
+     "role": "user",
+     "parts": [
+       { "inlineData": { "mimeType": "image/jpeg", "data": "<BASE64>" } },
+       { "text": "What is in this image?" }
+     ]
+   }
+   ```
+2. **Turn 2+ (Follow-up Chat):**  
+   The client sends the prior turns in `history`. The server prepends the image to the first user turn and appends subsequent model and user text turns, allowing Gemma 4 to answer questions like *"What happens if this component is removed?"* while maintaining the visual context of the original photo.
+
+---
+
+## 🛡️ Error Handling
+
+| Scenario | HTTP Status | Response Code | User Experience |
+|---|---|---|---|
+| Upload exceeds 10MB | `413 Payload Too Large` | `FILE_TOO_LARGE` | Clean banner asking to compress or pick a smaller photo |
+| Unsupported file (e.g., PDF) | `415 Unsupported Media Type` | `UNSUPPORTED_MEDIA_TYPE` | Informs user that only JPEG, PNG, WebP, GIF are supported |
+| Missing `GEMINI_API_KEY` | `401 Unauthorized` | `MISSING_API_KEY` | Yellow header badge + direct link to Google AI Studio |
+| Camera denied / unavailable | Client-side catch | `CAMERA_ERROR` | Friendly modal alert offering file upload alternative |
+| Gemini API rate limit | `429 Too Many Requests` | `AI_API_ERROR` | Instructs user to wait a few seconds before retrying |
+
+---
+
+## 🎬 3-Minute Hackathon Demo Script
+
+SceneSpeak comes with three prepared demo images in `demo_assets/` and built-in 1-click presets in the UI:
+
+### Scene 1: Electrical Circuit (Breadboard with Microcontroller & LED)
+1. Click **⚡ Electrical Circuit** in the preset bar.
+2. The circuit photo loads automatically with the question:  
+   *`"What is this circuit, and how does it work?"`*
+3. **Observation:** Gemma 4 identifies the ATmega microcontroller chip, green LED, current-limiting resistors, and capacitors. It explains how electricity flows from the power rails through the chip to light the LED.
+4. **Follow-up Test:** Click the suggested chip:  
+   *`"What happens if one of the resistors is removed?"`*  
+   Gemma explains that removing the resistor breaks the circuit loop or can burn out the LED with excess current.
+5. Click **Listen** to demonstrate audio text-to-speech.
+
+### Scene 2: Restaurant Menu (Trattoria Luna)
+1. Click **🍕 Restaurant Menu** in the preset bar.
+2. Ask: *`"Which dishes are vegetarian, and what do they contain?"`*
+3. **Observation:** Gemma reads the Italian names and leaf icons, listing the Bruschetta Mista, Burrata Caprese, Ravioli di Spinaci, and Gnocchi al Pomodoro, defining ingredients like burrata, pesto, and sage butter in simple English.
+4. **Follow-up Test:** Ask:  
+   *`"I have a nut allergy. Is there any dish I should avoid?"`*  
+   Gemma identifies the Ravioli di Spinaci (contains toasted walnuts) and warns the user.
+
+### Scene 3: Handwritten Biology Notes (Photosynthesis & Chloroplasts)
+1. Click **🌿 Study Notes & Diagram** in the preset bar.
+2. Ask: *`"Explain this diagram and summarize the main concepts."`*
+3. **Observation:** Gemma decodes the student's handwriting, reads the chemical equation ($6CO_2 + 6H_2O \rightarrow C_6H_{12}O_6 + 6O_2$), explains the role of thylakoids and chlorophyll, and breaks down the Calvin cycle into simple steps.
+4. **Follow-up Test:** Ask:  
+   *`"Give me a 3-question quick quiz based on these notes."`*  
+   Gemma generates a beginner-friendly quiz to test the user's understanding.
+
+---
+
+## 📄 License
 MIT License. Created for the Multimodal AI Hackathon.
